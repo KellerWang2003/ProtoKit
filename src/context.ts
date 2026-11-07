@@ -39,8 +39,6 @@ export const defaultSettings: StageSettings = {
 
 export type Screen = { id: string; label: string; group?: string }
 
-export type SectionInfo = { id: string; tab: string; title?: string; note?: string; order: number; seq: number }
-export type ShortcutInfo = { id: string; key: string; label?: string; run: () => void }
 
 export type ProtoContextValue = {
   namespace: string
@@ -58,10 +56,6 @@ export type ProtoContextValue = {
   open: boolean
   setOpen: (open: boolean | ((open: boolean) => boolean)) => void
   unlocked: boolean
-  // Registries for DebugSection and useDebugShortcut
-  registerSection: (info: SectionInfo) => () => void
-  sectionTarget: (id: string) => HTMLElement | null
-  registerShortcut: (info: ShortcutInfo) => () => void
 }
 
 export const ProtoContext = createContext<ProtoContextValue | null>(null)

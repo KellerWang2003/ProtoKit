@@ -1,7 +1,7 @@
 {
   "name": "proto-kit",
   "version": "0.1.0",
-  "description": "Drop-in debug panel and realistic device frames for React prototypes.",
+  "description": "Drop-in device frames and a DialKit debug panel for React prototypes.",
   "type": "module",
   "license": "MIT",
   "author": "Keller Wang",
@@ -16,17 +16,16 @@
   },
   "files": [
     "dist",
-    "README.md",
-    "GUIDELINES.md"
+    "README.md"
   ],
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
-    "demo": "vite demo",
+    "dev": "vite demo",
     "demo:build": "vite build demo",
     "typecheck": "tsc --noEmit",
-    "prepare": "tsup"
+    "prepare": "tsup",
+    "watch": "tsup --watch"
   },
   "peerDependencies": {
     "react": ">=18",
@@ -46,5 +45,9 @@
     "type": "git",
     "url": "git+https://github.com/KellerWang2003/protokit.git"
   },
-  "homepage": "https://github.com/KellerWang2003/protokit#readme"
+  "homepage": "https://github.com/KellerWang2003/protokit#readme",
+  "dependencies": {
+    "dialkit": "^2.1.0",
+    "motion": "^14.10.1"
+  }
 }

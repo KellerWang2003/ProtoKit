@@ -3,8 +3,10 @@ import type { CSSProperties, ReactNode } from 'react'
 import { BAND, devices, frameColors } from './devices'
 import type { Device } from './devices'
 import { ProtoContext, defaultSettings } from './context'
-import type { ProtoContextValue, Screen, SectionInfo, ShortcutInfo, StageSettings } from './context'
-import { DebugPanel } from './DebugPanel'
+import type { ProtoContextValue, Screen, StageSettings } from './context'
+import { DialRoot } from 'dialkit'
+import 'dialkit/styles.css'
+import { DevicePanel } from './DevicePanel'
 import { StatusBar } from './StatusBar'
 import { clearStored, useStored } from './store'
 import { css } from './styles'
@@ -41,7 +43,7 @@ export type ProtoKitProps = {
   theme?: 'light' | 'dark' | 'auto'
   /** A line under the device, e.g. "Interactive prototype — some features are in development." */
   caption?: ReactNode
-  /** Show the panel open on first load */
+  /** Show the DialKit panel open on first load */
   defaultOpen?: boolean
 }
 
@@ -164,7 +166,7 @@ export function ProtoKit({
   backdrop = '#ececea',
   theme = 'auto',
   caption,
-  defaultOpen = false,
+  defaultOpen = true,
 }: ProtoKitProps) {
   useStyles()
   const namespace = storageKey ?? `proto:${slug(name ?? 'app')}`
@@ -176,14 +178,16 @@ export function ProtoKit({
 
   const isPhone = useMedia(PHONE_QUERY)
   const wide = useMedia('(min-width: 900px)')
-  const prefersDark = useMedia('(prefers-color-scheme: dark)')
-  const panelTheme = theme === 'auto' ? (prefersDark ? 'dark' : 'light') : theme
+  const panelTheme = theme === 'auto' ? 'system' : theme
 
   // ── Unlock and open ──
   const unlockKey = `${namespace}:unlocked`
   const [unlocked, setUnlocked] = useState(() => unlock === 'always' || readSessionUnlock(unlockKey))
-  const [open, setOpenState] = useState(() => defaultOpen && (unlock === 'always' || readSessionUnlock(unlockKey)))
+  // The DialKit panel opens and closes itself; we only track it to make room for it
+  const [open, setOpenState] = useState(defaultOpen)
   const setOpen = useCallback((next: boolean | ((open: boolean) => boolean)) => setOpenState(next), [])
+  // ` hides every debug control at once, for clean recordings
+  const [visible, setVisible] = useState(true)
   useEffect(() => {
     if (unlock === 'always') setUnlocked(true)
   }, [unlock])
@@ -234,35 +238,6 @@ export function ProtoKit({
     }
   }, [unlocked, unlockKey])
 
-  // ── Registries ──
-  const [sections, setSections] = useState<SectionInfo[]>([])
-  const registerSection = useCallback((info: SectionInfo) => {
-    setSections((current) => [...current.filter((section) => section.id !== info.id), info].sort((a, b) => a.order - b.order || a.seq - b.seq))
-    return () => setSections((current) => current.filter((section) => section.id !== info.id))
-  }, [])
-  const [targets, setTargets] = useState<Record<string, HTMLElement>>({})
-  const setTarget = useCallback((id: string, element: HTMLElement | null) => {
-    setTargets((current) => {
-      if ((current[id] ?? null) === element) return current
-      const next = { ...current }
-      if (element) next[id] = element
-      else delete next[id]
-      return next
-    })
-  }, [])
-  const sectionTarget = useCallback((id: string) => targets[id] ?? null, [targets])
-
-  const shortcutsRef = useRef<ShortcutInfo[]>([])
-  const [shortcuts, setShortcuts] = useState<ShortcutInfo[]>([])
-  const registerShortcut = useCallback((info: ShortcutInfo) => {
-    shortcutsRef.current = [...shortcutsRef.current.filter((item) => item.id !== info.id), info]
-    setShortcuts(shortcutsRef.current)
-    return () => {
-      shortcutsRef.current = shortcutsRef.current.filter((item) => item.id !== info.id)
-      setShortcuts(shortcutsRef.current)
-    }
-  }, [])
-
   // ── Keyboard ──
   const latest = useRef({ settings, update, screens, screen, onScreenChange, unlocked })
   latest.current = { settings, update, screens, screen, onScreenChange, unlocked }
@@ -276,16 +251,12 @@ export function ProtoKit({
       const key = event.key
       if (key === '`') {
         event.preventDefault()
-        setOpenState((value) => !value)
-      } else if (key === 'Escape') setOpenState(false)
-      else if (key === 'f' || key === 'F') update({ framed: !settings.framed })
+        setVisible((value) => !value)
+      } else if (key === 'f' || key === 'F') update({ framed: !settings.framed })
       else if ((key === 'ArrowRight' || key === 'ArrowLeft') && screens?.length && onScreenChange) {
         const index = screens.findIndex((item) => item.id === screen)
         const next = Math.min(screens.length - 1, Math.max(0, index + (key === 'ArrowRight' ? 1 : -1)))
         if (next !== index) onScreenChange(screens[next].id)
-      } else {
-        const shortcut = shortcutsRef.current.find((item) => item.key === key || item.key.toLowerCase() === key.toLowerCase())
-        if (shortcut) shortcut.run()
       }
     }
     window.addEventListener('keydown', onKey)
@@ -371,14 +342,13 @@ export function ProtoKit({
     open,
     setOpen,
     unlocked,
-    registerSection,
-    sectionTarget,
-    registerShortcut,
   }
 
   return (
     <ProtoContext.Provider value={context}>
-      <div className="pk-stage" data-mode={mode} data-dark={isDark(background) ? '' : undefined} data-scroll={outer && !settings.fit ? '' : undefined} data-panel={outer && unlocked && open && wide && !isPhone ? '' : undefined} style={stageStyle}>
+      {/* Mounted first so the Device panel sits above the app's own panels */}
+      {unlocked && visible && <DevicePanel settings={settings} update={update} screens={screens} screen={screen} onScreenChange={onScreenChange} />}
+      <div className="pk-stage" data-mode={mode} data-dark={isDark(background) ? '' : undefined} data-scroll={outer && !settings.fit ? '' : undefined} data-panel={outer && unlocked && visible && open && wide && !isPhone ? '' : undefined} style={stageStyle}>
         <div className="pk-area" ref={area}>
           <div className="pk-fit" style={outer ? { width: outer.width * scale, height: outer.height * scale } : undefined}>
             <div className="pk-device" style={outer ? { width: outer.width, height: outer.height, transform: `scale(${scale})` } : undefined}>
@@ -406,26 +376,10 @@ export function ProtoKit({
         </div>
         {caption && !fill ? <p className="pk-caption">{caption}</p> : null}
       </div>
-      {unlocked && (
-        <DebugPanel
-          namespace={namespace}
-          name={name}
-          theme={panelTheme}
-          isPhone={isPhone}
-          open={open}
-          setOpen={setOpen}
-          showLauncher={!settings.hideLauncher}
-          settings={settings}
-          update={update}
-          reset={reset}
-          sections={sections}
-          setTarget={setTarget}
-          shortcuts={shortcuts}
-          screens={screens}
-          screen={screen}
-          onScreenChange={onScreenChange}
-          defaultBackdrop={backdrop}
-        />
+      {unlocked && visible && (
+        <>
+          <DialRoot position="top-right" theme={panelTheme} defaultOpen={open} productionEnabled onOpenChange={setOpen} />
+        </>
       )}
     </ProtoContext.Provider>
   )

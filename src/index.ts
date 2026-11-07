@@ -1,23 +1,9 @@
 export { ProtoKit } from './ProtoKit'
 export type { ProtoKitProps } from './ProtoKit'
-export {
-  DebugSection,
-  DebugToggle,
-  DebugSegmented,
-  DebugSelect,
-  DebugButtons,
-  DebugButton,
-  DebugLink,
-  DebugNumber,
-  DebugSlider,
-  DebugText,
-  DebugColor,
-  DebugValue,
-  useDebugState,
-  useDebugShortcut,
-  useProto,
-} from './controls'
-export type { Option } from './controls'
+export { useDebugState, useProto } from './hooks'
 export { devices, deviceList, frameColors } from './devices'
 export type { Device, DeviceId, FrameColor } from './devices'
 export type { Screen, StageSettings, StatusBarMode } from './context'
+// DialKit, re-exported so your app's panels share ProtoKit's panel (one copy, one root)
+export { useDialKit, useDialKitController } from 'dialkit'
+export type { DialConfig, UseDialOptions, DialKitController } from 'dialkit'

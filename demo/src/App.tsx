@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { ProtoKit, useDebugState, useProto } from 'proto-kit'
+import { ProtoKit, useDebugState, useDialKit, useProto } from 'proto-kit'
 
 // A tiny plant-care app, just to show the kit wrapped around something real.
 export function App() {
@@ -27,11 +27,19 @@ const plants = [
 const accents: Record<string, string> = { green: '#2f7d4f', olive: '#6b7a2f', clay: '#b4583a', sky: '#2f6fa8' }
 
 function Garden({ screen, go }: { screen: string; go: (id: string) => void }) {
-  const [empty] = useDebugState('empty', false)
-  const [season] = useDebugState('season', 'spring')
-  const [streak] = useDebugState('streak', 4)
+  // App controls: any useDialKit call shows up in the same panel as ProtoKit's Device settings
   const [sheet, setSheet] = useDebugState('sheet', false)
-  const [accentKey] = useDebugState('accent', 'green')
+  const { empty, season, streak, accent: accentKey } = useDialKit(
+    'Garden',
+    {
+      empty: false,
+      season: { type: 'select', options: ['spring', 'summer', 'winter'] },
+      streak: [4, 0, 30, 1],
+      accent: { type: 'select', options: ['green', 'olive', 'clay', 'sky'] },
+      wateringSheet: { type: 'action' },
+    },
+    { onAction: () => setSheet((open) => !open) },
+  )
   const [selected, setSelected] = useState(0)
   const accent = accents[accentKey]
   const { screenElement } = useProto()
