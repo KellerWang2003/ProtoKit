@@ -1,5 +1,5 @@
 {
-  "name": "proto-stage",
+  "name": "proto-kit",
   "version": "0.1.0",
   "description": "Drop-in debug panel and realistic device frames for React prototypes.",
   "type": "module",

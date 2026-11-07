@@ -6,5 +6,5 @@ export default defineConfig({
   plugins: [react()],
   base: './',
   server: { watch: { ignored: ['!**/src/**'] } },
-  resolve: { alias: { 'proto-stage': fileURLToPath(new URL('../src/index.ts', import.meta.url)) } },
+  resolve: { alias: { 'proto-kit': fileURLToPath(new URL('../src/index.ts', import.meta.url)) } },
 })

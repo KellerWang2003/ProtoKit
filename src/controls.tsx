@@ -9,7 +9,7 @@ let sequence = 0
 
 /**
  * A titled group of controls in the debug panel. Render it anywhere inside
- * <Prototype>: it shows up in the panel under `tab` (default "Debug"), and
+ * <ProtoKit>: it shows up in the panel under `tab` (default "Debug"), and
  * nothing renders where you put it. Sections in the same tab are ordered by
  * `order`, then by when they first mounted.
  */

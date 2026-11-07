@@ -9,7 +9,7 @@ import { StatusBar } from './StatusBar'
 import { clearStored, useStored } from './store'
 import { css } from './styles'
 
-export type PrototypeProps = {
+export type ProtoKitProps = {
   children: ReactNode
   /** Shown in the panel's title, and used to keep this prototype's settings apart from others on the same origin */
   name?: string
@@ -71,10 +71,10 @@ function useMedia(query: string) {
 let injected = false
 function useStyles() {
   useInsertionEffect(() => {
-    if (injected || document.querySelector('style[data-proto-stage]')) return
+    if (injected || document.querySelector('style[data-proto-kit]')) return
     injected = true
     const style = document.createElement('style')
-    style.setAttribute('data-proto-stage', '')
+    style.setAttribute('data-proto-kit', '')
     style.textContent = css
     document.head.appendChild(style)
   }, [])
@@ -150,7 +150,7 @@ function sideButtons(device: Device, landscape: boolean, portraitHeight: number)
  * the debug panel with its Recording tab, and gives every DebugSection inside
  * a place in the panel.
  */
-export function Prototype({
+export function ProtoKit({
   children,
   name,
   storageKey,
@@ -165,7 +165,7 @@ export function Prototype({
   theme = 'auto',
   caption,
   defaultOpen = false,
-}: PrototypeProps) {
+}: ProtoKitProps) {
   useStyles()
   const namespace = storageKey ?? `proto:${slug(name ?? 'app')}`
   const initial = useMemo(() => ({ ...defaultSettings, ...defaults }), [defaults])

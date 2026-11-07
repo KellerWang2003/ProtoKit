@@ -1,5 +1,5 @@
-export { Prototype } from './Prototype'
-export type { PrototypeProps } from './Prototype'
+export { ProtoKit } from './ProtoKit'
+export type { ProtoKitProps } from './ProtoKit'
 export {
   DebugSection,
   DebugToggle,

@@ -68,6 +68,6 @@ export const ProtoContext = createContext<ProtoContextValue | null>(null)
 
 export function useProtoContext(name: string) {
   const value = useContext(ProtoContext)
-  if (!value) throw new Error(`${name} must be used inside <Prototype>.`)
+  if (!value) throw new Error(`${name} must be used inside <ProtoKit>.`)
   return value
 }

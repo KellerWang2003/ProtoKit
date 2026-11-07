@@ -1,4 +1,4 @@
-# proto-stage
+# ProtoKit
 
 A drop-in debug panel and realistic device frame for React prototypes.
 
@@ -20,21 +20,21 @@ See [GUIDELINES.md](./GUIDELINES.md) for how the panel behaves and how to add co
 From GitHub (no npm publish needed):
 
 ```bash
-npm i github:KellerWang2003/proto-stage
+npm i github:KellerWang2003/proto-kit
 ```
 
-Or, while hacking on the kit itself, link a local copy: `npm i ../proto-stage`.
+Or, while hacking on the kit itself, link a local copy: `npm i ../proto-kit`.
 
 ## Use
 
 ```tsx
 // main.tsx
-import { Prototype } from 'proto-stage'
+import { ProtoKit } from 'proto-kit'
 
 createRoot(document.getElementById('root')!).render(
-  <Prototype name="Baton" unlock={import.meta.env.DEV ? 'always' : 'hold'}>
+  <ProtoKit name="Baton" unlock={import.meta.env.DEV ? 'always' : 'hold'}>
     <App />
-  </Prototype>,
+  </ProtoKit>,
 )
 ```
 
@@ -48,10 +48,10 @@ That's it. The Debug button sits bottom left; drag it anywhere.
 
 ### Add your own controls
 
-Put a `DebugSection` anywhere inside `<Prototype>`. It renders into the panel, not where you put it, so it can live right next to the screen it controls.
+Put a `DebugSection` anywhere inside `<ProtoKit>`. It renders into the panel, not where you put it, so it can live right next to the screen it controls.
 
 ```tsx
-import { DebugSection, DebugToggle, DebugSegmented, DebugButton, DebugButtons, useDebugState, useDebugShortcut } from 'proto-stage'
+import { DebugSection, DebugToggle, DebugSegmented, DebugButton, DebugButtons, useDebugState, useDebugShortcut } from 'proto-kit'
 
 function TodayScreen() {
   const [empty, setEmpty] = useDebugState('today.empty', false)
@@ -85,7 +85,7 @@ const screens = [
 ]
 const [screen, setScreen] = useDebugState('screen', 'welcome')
 
-<Prototype name="Baton" screens={screens} screen={screen} onScreenChange={setScreen}>
+<ProtoKit name="Baton" screens={screens} screen={screen} onScreenChange={setScreen}>
 ```
 
 With a router, pass the current path as `screen` and `navigate` as `onScreenChange`.
@@ -118,7 +118,7 @@ Your app renders into a box the size of the device screen, so:
 
 ## API
 
-Components: `Prototype`, `DebugSection`, `DebugToggle`, `DebugSegmented`, `DebugSelect`, `DebugButtons`, `DebugButton`, `DebugLink`, `DebugNumber`, `DebugSlider`, `DebugText`, `DebugColor`, `DebugValue`.
+Components: `ProtoKit`, `DebugSection`, `DebugToggle`, `DebugSegmented`, `DebugSelect`, `DebugButtons`, `DebugButton`, `DebugLink`, `DebugNumber`, `DebugSlider`, `DebugText`, `DebugColor`, `DebugValue`.
 
 Hooks:
 

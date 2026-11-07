@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  Prototype,
+  ProtoKit,
   DebugSection,
   DebugToggle,
   DebugSegmented,
@@ -13,7 +13,7 @@ import {
   useDebugState,
   useDebugShortcut,
   useProto,
-} from 'proto-stage'
+} from 'proto-kit'
 
 // A tiny plant-care app, just to show the kit wrapped around something real.
 const screens = [
@@ -26,7 +26,7 @@ const screens = [
 export function App() {
   const [screen, setScreen] = useDebugState('screen', 'home')
   return (
-    <Prototype
+    <ProtoKit
       name="Pocket Garden"
       unlock={new URLSearchParams(location.search).has("hold") ? "hold" : "always"}
       screens={screens}
@@ -37,7 +37,7 @@ export function App() {
     >
       <Garden screen={screen} go={setScreen} />
       <DemoControls />
-    </Prototype>
+    </ProtoKit>
   )
 }
 
