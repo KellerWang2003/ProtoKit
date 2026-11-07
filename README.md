@@ -20,7 +20,7 @@ See [GUIDELINES.md](./GUIDELINES.md) for how the panel behaves and how to add co
 From GitHub (no npm publish needed):
 
 ```bash
-npm i github:KellerWang2003/proto-kit
+npm i github:KellerWang2003/protokit
 ```
 
 Or, while hacking on the kit itself, link a local copy: `npm i ../proto-kit`.
