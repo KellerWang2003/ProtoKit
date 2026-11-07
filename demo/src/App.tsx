@@ -1,42 +1,18 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import {
-  ProtoKit,
-  DebugSection,
-  DebugToggle,
-  DebugSegmented,
-  DebugSelect,
-  DebugButtons,
-  DebugButton,
-  DebugSlider,
-  DebugValue,
-  useDebugState,
-  useDebugShortcut,
-  useProto,
-} from 'proto-kit'
+import { ProtoKit, useDebugState, useProto } from 'proto-kit'
 
 // A tiny plant-care app, just to show the kit wrapped around something real.
-const screens = [
-  { id: 'welcome', label: 'Welcome', group: 'Onboarding' },
-  { id: 'pick', label: 'Pick a plant', group: 'Onboarding' },
-  { id: 'home', label: 'Home', group: 'App' },
-  { id: 'plant', label: 'Plant detail', group: 'App' },
-]
-
 export function App() {
   const [screen, setScreen] = useDebugState('screen', 'home')
   return (
     <ProtoKit
       name="Pocket Garden"
       unlock={new URLSearchParams(location.search).has("hold") ? "hold" : "always"}
-      screens={screens}
-      screen={screen}
-      onScreenChange={setScreen}
       screenBackground="#f6f4ee"
       caption="Interactive prototype · some features are still in development."
     >
       <Garden screen={screen} go={setScreen} />
-      <DemoControls />
     </ProtoKit>
   )
 }
@@ -47,54 +23,6 @@ const plants = [
   { name: 'Fiddle leaf', water: 'Every 10 days', emoji: '🌳', due: 6 },
   { name: 'Cactus', water: 'Every 21 days', emoji: '🌵', due: 14 },
 ]
-
-// App-specific controls: they render into the panel, not here
-function DemoControls() {
-  const [empty, setEmpty] = useDebugState('empty', false)
-  const [season, setSeason] = useDebugState<'spring' | 'summer' | 'winter'>('season', 'spring')
-  const [streak, setStreak] = useDebugState('streak', 4)
-  const [sheet, setSheet] = useDebugState('sheet', false)
-  const [accent, setAccent] = useDebugState('accent', 'green')
-  useDebugShortcut('e', () => setEmpty((value) => !value), 'empty state')
-  useDebugShortcut('s', () => setSheet((value) => !value), 'sheet')
-  return (
-    <>
-      <DebugSection tab="Demo" title="Data">
-        <DebugToggle label="Empty state" hint="E" value={empty} onChange={setEmpty} />
-        <DebugSegmented label="Season" value={season} onChange={setSeason} options={['spring', 'summer', 'winter']} />
-        <DebugSlider label="Watering streak" value={streak} min={0} max={30} step={1} onChange={setStreak} format={(value) => `${value} days`} />
-      </DebugSection>
-      <DebugSection tab="Demo" title="Moments" note="Jump straight to a state for recording.">
-        <DebugToggle label="Watering sheet" hint="S" value={sheet} onChange={setSheet} />
-        <DebugButtons>
-          <DebugButton onClick={() => setStreak(30)}>Max streak</DebugButton>
-          <DebugButton onClick={() => setStreak(0)}>Lose streak</DebugButton>
-        </DebugButtons>
-      </DebugSection>
-      <DebugSection tab="Look" title="Theme">
-        <DebugSelect
-          label="Accent"
-          value={accent}
-          onChange={setAccent}
-          options={[
-            { group: 'Greens', options: [{ value: 'green', label: 'Fern' }, { value: 'olive', label: 'Olive' }] },
-            { group: 'Others', options: [{ value: 'clay', label: 'Clay' }, { value: 'sky', label: 'Sky' }] },
-          ]}
-        />
-        <StageInfo />
-      </DebugSection>
-    </>
-  )
-}
-
-function StageInfo() {
-  const { device, screenSize } = useProto()
-  return (
-    <DebugValue label="Screen">
-      {device ? device.label : 'Window'} · {Math.round(screenSize.width)}×{Math.round(screenSize.height)}
-    </DebugValue>
-  )
-}
 
 const accents: Record<string, string> = { green: '#2f7d4f', olive: '#6b7a2f', clay: '#b4583a', sky: '#2f6fa8' }
 

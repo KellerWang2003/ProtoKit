@@ -3,11 +3,11 @@ import type { ReactNode } from 'react'
 import { customLimits, customPresets, deviceList, frameColors } from './devices'
 import type { Device, DeviceId, FrameColor } from './devices'
 import type { Screen, SectionInfo, ShortcutInfo, StageSettings } from './context'
-import { DebugButton, DebugButtons, DebugSegmented, DebugToggle } from './controls'
+import { DebugToggle } from './controls'
 import { useDraggable } from './useDraggable'
 import { useStored } from './store'
 
-export const RECORDING_TAB = 'Recording'
+export const RECORDING_TAB = 'Device'
 
 type PanelProps = {
   namespace: string
@@ -88,14 +88,12 @@ function PanelBody({
   setOpen,
   settings,
   update,
-  reset,
   sections,
   setTarget,
   shortcuts,
   screens,
   screen,
   onScreenChange,
-  defaultBackdrop,
   dragHandlers,
 }: PanelProps & { dragHandlers?: ReturnType<typeof useDraggable>['handlers'] }) {
   const tabs = useMemo(() => {
@@ -110,7 +108,7 @@ function PanelBody({
 
   return (
     <>
-      <div className="pk-panel-head">
+      <div className="pk-panel-head" style={tabs.length > 1 ? undefined : { paddingBottom: 12 }}>
         <header className="pk-titlebar" title={dragHandlers ? 'Drag to move' : undefined} {...dragHandlers}>
           <span className="pk-title">
             Debug
@@ -122,17 +120,17 @@ function PanelBody({
           </button>
         </header>
         {screens && screens.length > 0 && onScreenChange && <ScreenPicker screens={screens} screen={screen} onChange={onScreenChange} />}
-        <div role="tablist" aria-label="Debug sections" className="pk-tabs">
+        {tabs.length > 1 && <div role="tablist" aria-label="Debug sections" className="pk-tabs">
           {tabs.map((name) => (
             <button key={name} type="button" role="tab" aria-selected={tab === name} className="pk-tab" onClick={() => setTab(name)}>
               {name}
             </button>
           ))}
-        </div>
+        </div>}
       </div>
 
       <div className="pk-panel-body" role="tabpanel">
-        {tab === RECORDING_TAB && <RecordingTab settings={settings} update={update} reset={reset} defaultBackdrop={defaultBackdrop} />}
+        {tab === RECORDING_TAB && <RecordingTab settings={settings} update={update} />}
         {visible.map((section) => (
           <section key={section.id} className="pk-section">
             {section.title && <h3 className="pk-section-title">{section.title}</h3>}
@@ -220,8 +218,8 @@ function DeviceGlyph({ device, landscape }: { device: Device | 'custom'; landsca
   return <span className="pk-device-glyph" style={{ width, height, borderRadius: device === 'custom' ? 2 : 3, borderStyle: device === 'custom' ? 'dashed' : 'solid' }} />
 }
 
-function RecordingTab({ settings, update, reset, defaultBackdrop }: { settings: StageSettings; update: (patch: Partial<StageSettings>) => void; reset: () => void; defaultBackdrop: string }) {
-  const { framed, device, custom, color, fit, landscape, background, statusBar, statusBarTone, homeIndicator, hideLauncher } = settings
+function RecordingTab({ settings, update }: { settings: StageSettings; update: (patch: Partial<StageSettings>) => void }) {
+  const { framed, device, custom, color, fit, landscape } = settings
   const clamp = (value: number) => Math.min(customLimits.max, Math.max(customLimits.min, Math.round(value) || customLimits.min))
   return (
     <>
@@ -292,63 +290,6 @@ function RecordingTab({ settings, update, reset, defaultBackdrop }: { settings: 
             <DebugToggle label="Fit to window" value={fit} onChange={(fit) => update({ fit })} />
           </>
         )}
-      </Section>
-
-      {framed && device !== 'custom' && (
-        <Section title="Screen">
-          <DebugSegmented
-            label="Status bar"
-            value={statusBar}
-            onChange={(statusBar) => update({ statusBar })}
-            options={[
-              { value: 'live', label: 'Live time' },
-              { value: 'fixed', label: '9:41' },
-              { value: 'hidden', label: 'Hidden' },
-            ]}
-          />
-          <DebugSegmented
-            label="Status bar text"
-            value={statusBarTone}
-            onChange={(statusBarTone) => update({ statusBarTone })}
-            options={[
-              { value: 'dark', label: 'Dark' },
-              { value: 'light', label: 'Light' },
-            ]}
-          />
-          <DebugToggle label="Home indicator" value={homeIndicator} onChange={(homeIndicator) => update({ homeIndicator })} />
-        </Section>
-      )}
-
-      {framed && (
-        <Section title="Background" note="Behind the device. Use green screen to key it out in your editor.">
-          <div className="pk-row">
-            <span className="pk-row-label">Color</span>
-            <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <input className="pk-color" type="color" aria-label="Background color" value={background ?? defaultBackdrop} onChange={(event) => update({ background: event.target.value })} />
-            </span>
-          </div>
-          <DebugButtons>
-            <DebugButton pressed={background === '#00b140'} onClick={() => update({ background: '#00b140' })}>
-              Green screen
-            </DebugButton>
-            <DebugButton pressed={background === '#ffffff'} onClick={() => update({ background: '#ffffff' })}>
-              White
-            </DebugButton>
-            <DebugButton pressed={background === '#000000'} onClick={() => update({ background: '#000000' })}>
-              Black
-            </DebugButton>
-            <DebugButton onClick={() => update({ background: null })}>Reset</DebugButton>
-          </DebugButtons>
-        </Section>
-      )}
-
-      <Section title="Recording" note="With the button hidden, open this panel with ` (backtick).">
-        <DebugToggle label="Hide Debug button" value={hideLauncher} onChange={(hideLauncher) => update({ hideLauncher })} />
-        <DebugButtons>
-          <DebugButton variant="danger" onClick={reset}>
-            Reset all debug settings
-          </DebugButton>
-        </DebugButtons>
       </Section>
     </>
   )

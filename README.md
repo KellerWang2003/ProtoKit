@@ -7,7 +7,7 @@ Wrap your app once and you get:
 - **A device frame** drawn in CSS: iPhone Pro, iPhone Pro Max, iPhone SE, Pixel, iPad mini, or a custom size. Four finishes, landscape, live status bar, Dynamic Island / punch hole, home indicator. It scales to fit the window and stays sharp.
 - **No frame / responsive mode** (press `F`): the app fills the window.
 - **Real phones just work**: opened on a phone, the app fills the screen and the frame disappears.
-- **A debug panel** with a built-in Recording tab (device, background, green screen, status bar, hide-for-recording) plus any tabs your app adds.
+- **A debug panel** with the device settings built in (frame on/off, device, finish, landscape, fit), plus any tabs your app adds.
 - **Controls that remember**: toggles, pills, selects, sliders and buttons backed by `useDebugState`, which survives reloads.
 - **Keyboard first**: `` ` `` opens the panel, `F` toggles the frame, `←` `→` step through screens, and you can add your own.
 
